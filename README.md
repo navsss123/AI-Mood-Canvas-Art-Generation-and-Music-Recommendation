@@ -11,12 +11,18 @@ It’s a perfect blend of **creativity, AI, and user-centric design**.
 
 ---
 
-## 🚀 Features
-- 🧠 **Mood Detection** – Understands user emotions via text input.
-- 🎨 **AI Art Generation** – Generates images reflecting the mood.
-- 🎵 **Mood Music Linking** – Suggests YouTube tracks matching emotional tone.
-- ⚡ **No Deployment Needed** – Works inside Google AI Studio or locally.
+<details>
+<summary>🚀 Features</summary>
+
+- 🧠 **Mood Detection** – Understands user emotions via text input.  
+- 🎨 **AI Art Generation** – Generates images reflecting the mood.  
+- 🎵 **Mood Music Linking** – Suggests YouTube tracks matching emotional tone.  
+- ⚡ **No Deployment Needed** – Works inside Google AI Studio or locally.  
 - 💬 **Enhanced Prompts** – Optimized Gemini prompts for better results.
+
+</details>
+
+---
 
 <details>
 <summary>📂 Tech Stack</summary>
