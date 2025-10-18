@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type, Part } from "@google/genai";
+import { GoogleGenAI, Type, Part, Modality } from "@google/genai";
 import type { MusicGenerationResult, ArtAndMusicGenerationResult } from '../types';
 
 if (!process.env.API_KEY) {
@@ -41,14 +41,14 @@ export async function generateMusicSuggestions(
     let systemInstructionText: string;
 
     if (prompt && image) {
-      systemInstructionText = "You are an expert music curator. Generate specific song suggestions that perfectly match the visual mood and atmosphere of the user's image, and consider any accompanying text description.";
+      systemInstructionText = "You are a seasoned music journalist with an encyclopedic knowledge of music across all genres and eras. Your task is to curate a short, eclectic playlist. Analyze the provided image and text to capture the core emotion and aesthetic. Return a list of 3-5 songs that perfectly match this vibe. Include a mix of genres and artists, from popular hits to hidden gems.";
       modelParts.push({ text: prompt });
       modelParts.push(image);
     } else if (prompt) {
-      systemInstructionText = "You are an expert music curator. Generate specific song suggestions that perfectly match the vibe of the user's text description.";
+      systemInstructionText = "You are a seasoned music journalist with an encyclopedic knowledge of music across all genres and eras. Your task is to curate a short, eclectic playlist based on the user's description. Capture the core emotion and aesthetic of the text. Return a list of 3-5 songs that perfectly match this vibe. Include a mix of genres and artists, from popular hits to hidden gems.";
       modelParts.push({ text: prompt });
     } else if (image) {
-      systemInstructionText = "You are an expert music curator. Generate specific song suggestions that perfectly match the visual mood and atmosphere of the user's image.";
+      systemInstructionText = "You are a seasoned music journalist with an encyclopedic knowledge of music across all genres and eras. Your task is to curate a short, eclectic playlist based on the provided image. Analyze its colors, composition, and subject matter to capture its core emotion and aesthetic. Return a list of 3-5 songs that perfectly match this vibe. Include a mix of genres and artists, from popular hits to hidden gems.";
       modelParts.push(image);
     } else {
       throw new Error("Prompt or image must be provided.");
@@ -85,26 +85,26 @@ export async function generateMusicSuggestions(
 
 export async function generateArtAndMusic(prompt: string): Promise<ArtAndMusicGenerationResult> {
   try {
-    const artPrompt = `A stunning, high-quality artwork representing the mood: "${prompt}".`;
+    const artPrompt = `A masterpiece digital painting that captures the essence of this mood: "${prompt}". The style should be evocative and artistic, with dramatic lighting, a rich color palette, and intricate details. Aim for a cinematic and emotionally resonant image. Avoid clichés.`;
 
     const musicPromise = ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: { parts: [{ text: prompt }] },
       config: {
-        systemInstruction: "You are an expert music curator. Generate specific song suggestions that perfectly match the vibe of the user's text description.",
+        systemInstruction: "You are a seasoned music journalist with an encyclopedic knowledge of music across all genres and eras. Your task is to curate a short, eclectic playlist based on the user's description. Capture the core emotion and aesthetic of the text. Return a list of 3-5 songs that perfectly match this vibe. Include a mix of genres and artists, from popular hits to hidden gems.",
         responseMimeType: "application/json",
         responseSchema: musicSuggestionsSchema,
       }
     });
 
-    const artPromise = ai.models.generateImages({
-      model: 'imagen-4.0-generate-001',
-      prompt: artPrompt,
-      config: {
-        numberOfImages: 1,
-        outputMimeType: 'image/png',
-        aspectRatio: '1:1',
-      },
+    const artPromise = ai.models.generateContent({
+        model: 'gemini-2.5-flash-image',
+        contents: {
+            parts: [{ text: artPrompt }],
+        },
+        config: {
+            responseModalities: [Modality.IMAGE],
+        },
     });
 
     const [musicResponse, artResponse] = await Promise.all([musicPromise, artPromise]);
@@ -117,7 +117,8 @@ export async function generateArtAndMusic(prompt: string): Promise<ArtAndMusicGe
     }
 
     // Process art response
-    const base64ImageBytes = artResponse.generatedImages?.[0]?.image?.imageBytes;
+    const artPart = artResponse.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+    const base64ImageBytes = artPart?.inlineData?.data;
     
     if (base64ImageBytes) {
       const imageUrl = `data:image/png;base64,${base64ImageBytes}`;
