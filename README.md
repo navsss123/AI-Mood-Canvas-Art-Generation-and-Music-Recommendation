@@ -72,13 +72,26 @@ It’s a perfect blend of **creativity, AI, and user-centric design**.
 <details>
 <summary>🗂️ Project Structure</summary>
 AI-Mood-Canvas/
-│
+
+   
 ├── components/ # Reusable UI (ArtDisplay, MusicCard, MoodInput)
+
+
 ├── services/ # Gemini API & YouTube logic
+
+
 ├── App.tsx # Main app logic
+
+
 ├── index.tsx # Entry point
+
+
 ├── types.ts # TypeScript interfaces
+
+
 ├── vite.config.ts # Build configuration
+
+
 └── README.md # Documentation
 
 </details>
@@ -90,6 +103,8 @@ AI-Mood-Canvas/
 
 ``text
 User: "Feeling relaxed and dreamy"
+
+
 Gemini → "Create a soothing abstract ocean art with soft blues and ambient music"
 </details>
 
